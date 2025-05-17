@@ -26,12 +26,12 @@ from tf2_ros import TransformBroadcaster
 from PyRoboteq import RoboteqHandler
 from PyRoboteq import roboteq_commands as cmds
 
-class DummyNode(Node):
+class AJNController(Node):
     def __init__(self):
-        super().__init__('diff_drive')
+        super().__init__('AJN_controller')
         self.controller = RoboteqHandler()
         # self.connected = self.controller.connect("/dev/ttyDiffDrive") # Insert your COM port (for windows) or /dev/tty{your_port} (Commonly /dev/ttyACM0) for linux.
-        self.connected = self.controller.connect("/dev/ttyUSB0") 
+        self.connected = self.controller.connect("/dev/ttyUSB2") 
 
         # self.joint_state_subscription = self.create_subscription(JointState, '/joint_states', self.joint_state_callback, 10)
         self.pub_odom = self.create_publisher(Odometry,'/wheel/odom',10)
@@ -65,7 +65,7 @@ class DummyNode(Node):
         self.data["wheel_r"] = 0
         self.t = time.time()
 
-        self.get_logger().info("Diff drive controller started")
+        self.get_logger().info("AJN diff drive controller started")
     
     def timer_roboteq_callback(self):
         try:
@@ -192,7 +192,7 @@ class DummyNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = DummyNode()
+    node = AJNController()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

@@ -10,12 +10,13 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     # Define LaunchConfiguration objects
     channel_type = LaunchConfiguration('channel_type', default='serial')
-    serial_port = LaunchConfiguration('serial_port', default='/dev/ttyUSB3')
+    serial_port = LaunchConfiguration('serial_port', default='/dev/rplidar')
     serial_baudrate = LaunchConfiguration('serial_baudrate', default='115200')
     frame_id = LaunchConfiguration('frame_id', default='laser')
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
     scan_mode = LaunchConfiguration('scan_mode', default='Boost')
+    hostname = LaunchConfiguration('hostname', default='192.168.1.191')
 
     # Create launch argument declarations
     declare_channel_type = DeclareLaunchArgument(
@@ -52,6 +53,12 @@ def generate_launch_description():
         'scan_mode',
         default_value=scan_mode,
         description='Specifying scan mode of lidar')
+    
+    hostname_arg = DeclareLaunchArgument(
+        'hostname',
+        default_value=hostname,
+        description='Specifying hostname of sick lidar'
+    )
 
     # Define SLLIDAR node
     sllidar_node = Node(
@@ -78,14 +85,13 @@ def generate_launch_description():
         output='screen',
         arguments=[
             './src/sick_scan_xd/launch/sick_tim_7xxS.launch',
-            'hostname:=192.168.1.191'
+            ['hostname:=', LaunchConfiguration('hostname')]
         ],
         remappings=[
             ('/scan', '/f_scan')
         ]
     )
 
-    # Return the LaunchDescription with all components
     return LaunchDescription([
         declare_channel_type,
         declare_serial_port,
@@ -94,6 +100,7 @@ def generate_launch_description():
         declare_inverted,
         declare_angle_compensate,
         declare_scan_mode,
-        sllidar_node,  # Using direct node creation with remapping
+        sllidar_node,
+        hostname_arg,
         sick_scan_node
     ])
