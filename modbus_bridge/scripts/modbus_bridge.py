@@ -4,6 +4,7 @@ import rclpy
 from rclpy.node import Node
 from pyModbusTCP.client import ModbusClient
 from std_msgs.msg import Bool, String
+from std_srvs.srv import SetBool
 
 
 class ModbusBridge(Node):
@@ -26,10 +27,11 @@ class ModbusBridge(Node):
         self.f_l_pub = self.create_publisher(Bool, '/sensor/limit_f_l', 10)
         self.f_r_pub = self.create_publisher(Bool, '/sensor/limit_f_r', 10)
 
-        # Subscribers
-        self.create_subscription(String, '/command/led', self.led_cb, 10)
-        self.create_subscription(String, '/command/motor', self.motor_cb, 10)
-
+        # Service Server
+        # self.create_subscription(String, '/command/led', self.led_cb, 10)
+        # self.create_subscription(String, '/command/motor', self.motor_cb, 10)
+        self.create_service(SetBool, '/command/motor', self.motor_cb)
+        
         # Polling timer
         self.create_timer(0.05, self.poll_sensors)
 
@@ -59,11 +61,16 @@ class ModbusBridge(Node):
         if idx is not None:
             self.client.write_single_coil(idx, True)
 
-    def motor_cb(self, msg: String):
-        if msg.data == 'start':
+    def motor_cb(self, req, res):
+        if req.data:
             self.client.write_single_coil(20, True)
-        elif msg.data == 'stop':
+            res.success = True
+            res.message = "Motor started"
+        else:
             self.client.write_single_coil(21, True)
+            res.success = True
+            res.message = "Motor stopped"
+        return res
 
 
 def main(args=None):
