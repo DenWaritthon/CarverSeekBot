@@ -29,7 +29,6 @@ class ModbusBridge(Node):
 
         # Service Server
         # self.create_subscription(String, '/command/led', self.led_cb, 10)
-        # self.create_subscription(String, '/command/motor', self.motor_cb, 10)
         self.create_service(SetBool, '/command/motor', self.motor_cb)
         
         # Polling timer
