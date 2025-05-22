@@ -45,20 +45,20 @@ class ModbusBridge(Node):
             self.f_l_pub.publish(Bool(data=coils[3]))
             self.f_r_pub.publish(Bool(data=coils[4]))
 
-    def led_cb(self, msg: String):
-        color_map = {
-            'red': 10,
-            'green': 11,
-            'blue': 12,
-            'off': 13,
-            'white': 14,
-            'purple': 15,
-            'yellow': 16,
-            'indigo': 17,
-        }
-        idx = color_map.get(msg.data.lower())
-        if idx is not None:
-            self.client.write_single_coil(idx, True)
+    # def led_cb(self, msg: String):
+    #     color_map = {
+    #         'red': 10,
+    #         'green': 11,
+    #         'blue': 12,
+    #         'off': 13,
+    #         'white': 14,
+    #         'purple': 15,
+    #         'yellow': 16,
+    #         'indigo': 17,
+    #     }
+    #     idx = color_map.get(msg.data.lower())
+    #     if idx is not None:
+    #         self.client.write_single_coil(idx, True)
 
     def motor_cb(self, req, res):
         if req.data:
