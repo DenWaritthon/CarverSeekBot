@@ -30,7 +30,7 @@ class ModbusBridge(Node):
         # Service Server
         # self.create_subscription(String, '/command/led', self.led_cb, 10)
         self.create_service(SetBool, '/command/motor', self.motor_cb)
-        
+
         # Polling timer
         self.create_timer(0.05, self.poll_sensors)
 
@@ -65,10 +65,12 @@ class ModbusBridge(Node):
             self.client.write_single_coil(20, True)
             res.success = True
             res.message = "Motor started"
+            self.get_logger().info("Motor started")
         else:
             self.client.write_single_coil(21, True)
             res.success = True
             res.message = "Motor stopped"
+            self.get_logger().info("Motor stopped")
         return res
 
 

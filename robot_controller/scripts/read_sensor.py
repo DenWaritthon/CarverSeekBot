@@ -24,7 +24,11 @@ class SensorMonitorNode(Node):
             Bool, '/sensor/emer', self.emer_callback, 10)
         
         # State of rising edge
-        self.prev_limit_triger = False
+        self.prev_limit_br = False
+        self.prev_limit_bl = False
+        self.prev_limit_fr = False
+        self.prev_limit_fl = False
+
         self.prev_emer_triger = False
         
         # Create service client
@@ -66,29 +70,31 @@ class SensorMonitorNode(Node):
             self.get_logger().error(f'Service call failed: {e}')
     
     def limit_fl_callback(self, msg):
-        if msg.data and not self.prev_limit_triger:
+        if msg.data and not self.prev_limit_fl:
             self.call_motor_service('Front Left Limit Sensor')
-        self.prev_limit_triger = msg.data
+        self.prev_limit_fl = msg.data
     
     def limit_fr_callback(self, msg):
-        if msg.data and not self.prev_limit_triger:
+        if msg.data and not self.prev_limit_fr:
             self.call_motor_service('Front Right Limit Sensor')
-        self.prev_limit_triger = msg.data
+        self.prev_limit_fr = msg.data
 
     def limit_bl_callback(self, msg):
-        if msg.data and not self.prev_limit_triger:
+        if msg.data and not self.prev_limit_bl:
             self.call_motor_service('Back Left Limit Sensor')
-        self.prev_limit_triger = msg.data
+        self.prev_limit_bl = msg.data
     
     def limit_br_callback(self, msg):
-        if msg.data and not self.prev_limit_triger:
+        if msg.data and not self.prev_limit_br:
+            print("Tricker")
             self.call_motor_service('Back Right Limit Sensor')
-        self.prev_limit_triger = msg.data
+        self.prev_limit_br = msg.data
     
     def emer_callback(self, msg):
         if msg.data and not self.prev_emer_triger:
             self.call_motor_service('Emergency Sensor')
         self.prev_emer_triger = msg.data
+
 
 def main(args=None):
     rclpy.init(args=args)
