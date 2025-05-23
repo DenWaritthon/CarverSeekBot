@@ -20,7 +20,7 @@ def generate_launch_description():
     # DiffDrive node
     diffdrive_node = Node(
         package='robot_controller',
-        executable='diff_drive_controller.py',
+        executable='new_diff_drive_controller.py',
         name='diff_drive_controller',
         output='screen',
     )
