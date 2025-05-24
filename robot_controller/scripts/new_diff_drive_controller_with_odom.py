@@ -20,7 +20,7 @@ class DiffDriveController(Node):
         super().__init__('diff_drive_controller')
         self.controller = RoboteqHandler()
         # Set MotorDriver Connectt in com port /dev/tty{your_port} (Commonly /dev/ttyACM0) for linux.
-        self.connected = self.controller.connect("/dev/diffdrive") 
+        self.connected = self.controller.connect("/dev/ttyUSB0") 
 
         # Pub Topic
         self.pub_odom = self.create_publisher(Odometry,'/wheel/odom',10)
@@ -81,8 +81,8 @@ class DiffDriveController(Node):
             spd_2 = spd_1[1].split(":")
             dt = time.time() - self.t
             self.t = time.time()
-            self.data["speed_l"] = -float(spd_2[0]) *  2 * math.pi / 2400
-            self.data["speed_r"] = -float(spd_2[1]) *  2 * math.pi / 2400
+            self.data["speed_r"] = -float(spd_2[0]) *  2 * math.pi / 2400
+            self.data["speed_l"] = -float(spd_2[1]) *  2 * math.pi / 2400
             self.odometry_compute(dt)
         except:
             self.get_logger().error(f'Read wheel speed error!')
@@ -95,7 +95,7 @@ class DiffDriveController(Node):
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_footprint'
+        t.child_frame_id = 'map'
 
         # Set Odom Traransform Data
         t.transform.translation.x = self.x
@@ -106,12 +106,14 @@ class DiffDriveController(Node):
         t.transform.rotation.y = q[1]
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
+
+        self.odom_broadcaster.sendTransform(t)
         
         # Set Odom Header
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
-        odom.child_frame_id = "base_footprint"
+        odom.child_frame_id = "map"
 
         # Set Odom Position Data
         odom.pose.pose.position.x = self.x

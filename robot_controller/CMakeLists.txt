@@ -28,7 +28,8 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   # scripts/dummy_script.py
-  scripts/new_diff_drive_controller.py
+  # scripts/new_diff_drive_controller.py
+  scripts/new_diff_drive_controller_with_odom.py
   scripts/read_sensor.py
   DESTINATION lib/${PROJECT_NAME}
 )

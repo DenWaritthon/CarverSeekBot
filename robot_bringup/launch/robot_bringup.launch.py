@@ -20,7 +20,7 @@ def generate_launch_description():
     # DiffDrive node
     diffdrive_node = Node(
         package='robot_controller',
-        executable='new_diff_drive_controller.py',
+        executable='new_diff_drive_controller_with_odom.py',
         name='diff_drive_controller',
         output='screen',
     )
@@ -31,6 +31,13 @@ def generate_launch_description():
             get_package_share_directory('teleop_twist_joy') + '/launch/teleop-launch.py'
         ),
         launch_arguments={'joy_config': joy_type}.items()
+    )
+
+    robot_decription_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            get_package_share_directory('robot_description') + '/launch/carver_cap_description.launch.py'
+        ),
+        launch_arguments={'use_sim_time': 'false'}.items()
     )
 
     #Modbus bridge node
@@ -49,10 +56,21 @@ def generate_launch_description():
         output='screen'
     )
 
+    odom_to_map = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='odom_to_map',
+        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint'],
+        # Note: back lidar has 180 degree rotation (math.pi) to face backward
+        output='screen'
+    )
+
     return LaunchDescription([
         declare_joy_type,
         teleop_launch,
         diffdrive_node,
         modbus_bridge_node,
-        read_sensor_node
+        read_sensor_node,
+        robot_decription_launch,
+        odom_to_map
     ])
