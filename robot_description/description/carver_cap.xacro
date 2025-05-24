@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+
+<robot name="carver_cap" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Color Material -->
+    <material name="gray">
+        <color rgba="0.5 0.5 0.5 1"/>
+    </material>
+
+    <!-- Base Footprint Link -->
+        <link name="base_footprint"/>
+
+    <!-- Chassis -->
+        <!-- Joint -->
+        <joint name="chassis_joint" type="fixed">
+            <origin xyz="0.0 0 0.35" rpy="0 0 0"/>
+            <parent link="base_footprint"/>
+            <child link="chassis_link"/>
+        </joint>
+        <!-- Link -->
+        <link name="chassis_link">
+            <visual name="">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find robot_description)/models/FrameNew.STL" scale="1 1 1"/>
+                </geometry>
+                <material name="gray"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="file://$(find robot_description)/models/FrameNew.STL" scale="1 1 1"/>
+                </geometry>
+            </collision>
+        </link>
+
+    <!-- IMU -->
+        <!-- Joint -->
+        <joint name="imu_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="0 3.14 3.14"/>
+            <parent link="chassis_link"/>
+            <child link="imu_link"/>
+        </joint>
+        <!-- Link -->
+        <link name="imu_link"/>
+
+    <!-- Camera -->
+        <!-- Joint -->
+        <joint name="camera_joint" type="fixed">
+            <origin xyz="0 0 0.4" rpy="0 0 0"/>
+            <parent link="chassis_link"/>
+            <child link="camera_link"/>
+        </joint>
+        <!-- Link -->
+        <link name="camera_link"/>
+
+    <!-- Front LiDar -->
+        <!-- Joint -->
+        <joint name="front_lidar_joint" type="fixed">
+            <origin xyz="0.465 0 -0.2" rpy="3.14 0 0"/>
+            <parent link="chassis_link"/>
+            <child link="front_lidar_link"/>
+        </joint>
+        <!-- Link -->
+        <link name="front_lidar_link"/>
+
+    <!-- Back LiDar -->
+        <!-- Joint -->
+        <joint name="back_lidar_joint" type="fixed">
+            <origin xyz="-0.465 0 -0.2" rpy="3.14 0 3.14"/>
+            <parent link="chassis_link"/>
+            <child link="back_lidar_link"/>
+        </joint>
+        <!-- Link -->
+        <link name="back_lidar_link"/>
+
+    <!-- Left Wheel -->
+        <!-- Joint -->
+        <joint name="left_wheel_joint" type="fixed">
+            <origin xyz="0 0.185 -0.275" rpy="-1.57 0 0"/>
+            <parent link="chassis_link"/>
+            <child link="left_wheel_link"/>
+            <axis xyz="0 1 0"/>
+            <limit effort="10000.0" velocity="1000.0"/>
+        </joint>
+        <!-- Link -->
+        <link name="left_wheel_link">
+            <visual>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <mesh filename="file://$(find robot_description)/models/Wheel.STL" scale="1 1 1"/>
+              </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="file://$(find robot_description)/models/Wheel.STL" scale="1 1 1"/>
+                </geometry>
+            </collision>
+        </link>
+
+    <!-- Right Wheel -->
+        <!-- Joint -->
+        <joint name="right_wheel_joint" type="fixed">
+            <origin xyz="0 -0.185 -0.275" rpy="1.57 0 0"/>
+            <parent link="chassis_link"/>
+            <child link="right_wheel_link"/>
+            <axis xyz="0 -1 0"/>
+            <limit effort="10000.0" velocity="1000.0"/>
+        </joint>
+        <!-- Link -->
+        <link name="right_wheel_link">
+            <visual>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <geometry>
+                  <mesh filename="file://$(find robot_description)/models/Wheel.STL" scale="1 1 1"/>
+              </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="file://$(find robot_description)/models/Wheel.STL" scale="1 1 1"/>
+                </geometry>
+            </collision>
+        </link>
+</robot>
