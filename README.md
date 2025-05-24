@@ -7,7 +7,7 @@ Checklit
 ## Checklist
 - [x] Modbus
 - [x] Lidar
-- [] Controller from AJ.Nook 
+- [x] Controller from AJ.Nook 
 
 > Controller need to find USB
 
