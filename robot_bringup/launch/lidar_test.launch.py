@@ -7,6 +7,7 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+import math
 def generate_launch_description():
     # RPLIDAR parameters
     channel_type = LaunchConfiguration('channel_type', default='serial')
@@ -16,10 +17,6 @@ def generate_launch_description():
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
     scan_mode = LaunchConfiguration('scan_mode', default='Boost')
-
-    # Sick Lidar parameters
-    hostname = LaunchConfiguration('hostname', default='192.168.1.191')
-    sick_frame_id = LaunchConfiguration('sick_frame_id', default='front_lidar')
 
     # RPLIDAR parameters
     declare_channel_type = DeclareLaunchArgument(
@@ -86,12 +83,34 @@ def generate_launch_description():
             arguments=[
                 './src/sick_scan_xd/launch/sick_tim_7xxS.launch',
                 'hostname:=192.168.1.191',
-                'frame_id:=front_lidar'
+                'frame_id:=front_lidar',
+                'tf_base_frame_id:=base_link',
+                'tf_base_lidar_xyz_rpy:=0.3,0.0,0.0,3.14,0.0,0.0',
             ],
             remappings=[
                 ('/scan', '/f_scan')
             ]
         )
+    
+    # Static transform for front LIDAR
+    # front_lidar_transform = Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     name='front_lidar_broadcaster',
+    #     arguments=['0.3', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'front_lidar'],
+    #     # Format: x y z yaw pitch roll parent_frame child_frame
+    #     output='screen'
+    # )
+    
+    # Static transform for back LIDAR
+    back_lidar_transform = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='back_lidar_broadcaster',
+        arguments=['-0.3', '0.0', '0.0', '1.57', '0.0', '0.0', 'base_link', 'back_lidar'],
+        # Note: back lidar has 180 degree rotation (math.pi) to face backward
+        output='screen'
+    )
 
     return LaunchDescription([
         declare_channel_type,
@@ -102,5 +121,7 @@ def generate_launch_description():
         declare_angle_compensate,
         declare_scan_mode,
         sllidar_node,
-        sick_scan_node
+        sick_scan_node,
+        # front_lidar_transform,
+        back_lidar_transform
     ])
