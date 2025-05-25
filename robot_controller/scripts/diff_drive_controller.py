@@ -31,7 +31,7 @@ class AJNController(Node):
         super().__init__('AJN_controller')
         self.controller = RoboteqHandler()
         # self.connected = self.controller.connect("/dev/ttyDiffDrive") # Insert your COM port (for windows) or /dev/tty{your_port} (Commonly /dev/ttyACM0) for linux.
-        self.connected = self.controller.connect("/dev/ttyUSB0") 
+        self.connected = self.controller.connect("/dev/diffdrive") 
 
         # self.joint_state_subscription = self.create_subscription(JointState, '/joint_states', self.joint_state_callback, 10)
         self.pub_odom = self.create_publisher(Odometry,'/wheel/odom',10)

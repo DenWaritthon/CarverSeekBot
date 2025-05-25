@@ -136,7 +136,7 @@ def generate_launch_description():
                     # {'laser_1_yaw_offset': 3.14159},
                     # {'laser_2_x_offset': -0.465},
                     # {'laser_2_y_offset': 0.0},
-                    # {'laser_2_yaw_offset': -1.57079632679},
+                    {'laser_2_yaw_offset': -1.57079632679},
                     {'tolerance': 0.01},
                     {'queue_size': 5},
                     {'angle_increment': 0.001},
@@ -155,7 +155,7 @@ def generate_launch_description():
                 ],
             )
         ],
-        output='screen',
+        output='screen'
     )
 
     return LaunchDescription([

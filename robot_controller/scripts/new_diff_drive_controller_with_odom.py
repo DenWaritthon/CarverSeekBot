@@ -20,7 +20,7 @@ class DiffDriveController(Node):
         super().__init__('diff_drive_controller')
         self.controller = RoboteqHandler()
         # Set MotorDriver Connectt in com port /dev/tty{your_port} (Commonly /dev/ttyACM0) for linux.
-        self.connected = self.controller.connect("/dev/ttyUSB0") 
+        self.connected = self.controller.connect("/dev/diffdrive") 
 
         # Pub Topic
         self.pub_odom = self.create_publisher(Odometry,'/wheel/odom',10)

@@ -81,5 +81,6 @@ def generate_launch_description():
         modbus_bridge_node,
         read_sensor_node,
         robot_decription_launch,
+        lidar_launch,
         odom_to_map
     ])
