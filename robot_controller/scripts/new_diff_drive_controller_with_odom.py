@@ -107,7 +107,7 @@ class DiffDriveController(Node):
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
 
-        self.odom_broadcaster.sendTransform(t)
+        # self.odom_broadcaster.sendTransform(t)
         
         # Set Odom Header
         odom = Odometry()

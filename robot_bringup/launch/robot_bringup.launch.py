@@ -7,9 +7,15 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
+import os
+
 def generate_launch_description():
     # Define LaunchConfiguration objects
     joy_type = LaunchConfiguration('joy_type', default='xbox')
+
+
+    robot_navigation_pkg = get_package_share_directory('robot_navigation')
+
 
     # Create launch argument declarations
     declare_joy_type = DeclareLaunchArgument(
@@ -57,21 +63,35 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Odom to map static transform publisher
-    odom_to_map = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='odom_to_map',
-        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint'],
-        # Note: back lidar has 180 degree rotation (math.pi) to face backward
-        output='screen'
-    )
+    # # Odom to map static transform publisher
+    # odom_to_map = Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     name='odom_to_map',
+    #     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint'],
+    #     # Note: back lidar has 180 degree rotation (math.pi) to face backward
+    #     output='screen'
+    # )
 
     # Lidar launch
     lidar_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             get_package_share_directory('robot_bringup') + '/launch/lidar.launch.py'
         )    
+    )
+
+    ekf_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[
+            os.path.join(robot_navigation_pkg, 'config', 'ekf.yaml')
+            # {'use_sim_time': 'false'},
+             ],
+        remappings=[
+            ('/odometry/filtered', '/odom')
+        ]
     )
 
     return LaunchDescription([
@@ -82,5 +102,6 @@ def generate_launch_description():
         read_sensor_node,
         robot_decription_launch,
         lidar_launch,
-        odom_to_map
+        ekf_node
+        # odom_to_map
     ])

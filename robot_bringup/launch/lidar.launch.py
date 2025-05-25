@@ -153,6 +153,9 @@ def generate_launch_description():
                     {'enable_shadow_filter': True},
                     {'enable_average_filter': True},
                 ],
+                remappings=[
+                    ('/merged', '/scan')  # Remapping /merged to /scan
+                ],
             )
         ],
         output='screen'
