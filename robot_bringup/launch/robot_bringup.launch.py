@@ -33,6 +33,7 @@ def generate_launch_description():
         launch_arguments={'joy_config': joy_type}.items()
     )
 
+    # Robot description launch
     robot_decription_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             get_package_share_directory('robot_description') + '/launch/carver_cap_description.launch.py'
@@ -56,6 +57,7 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Odom to map static transform publisher
     odom_to_map = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
@@ -63,6 +65,13 @@ def generate_launch_description():
         arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint'],
         # Note: back lidar has 180 degree rotation (math.pi) to face backward
         output='screen'
+    )
+
+    # Lidar launch
+    lidar_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            get_package_share_directory('robot_bringup') + '/launch/lidar.launch.py'
+        )    
     )
 
     return LaunchDescription([
