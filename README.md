@@ -25,3 +25,8 @@ ros2 launch robot_bringup lidar_test.launch.py
 ```bash
 ros2 launch robot_controller diff_drive_controller.py
 ```
+
+3. IMU Micro ROS
+```bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/m5c
+```

@@ -15,6 +15,7 @@ def generate_launch_description():
 
 
     robot_navigation_pkg = get_package_share_directory('robot_navigation')
+    robot_bringup_pkg = get_package_share_directory('robot_bringup')
 
 
     # Create launch argument declarations
@@ -64,12 +65,11 @@ def generate_launch_description():
     )
 
     # # Odom to map static transform publisher
-    # odom_to_map = Node(
+    # static_tf= Node(
     #     package='tf2_ros',
     #     executable='static_transform_publisher',
-    #     name='odom_to_map',
-    #     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'odom', 'base_footprint'],
-    #     # Note: back lidar has 180 degree rotation (math.pi) to face backward
+    #     name='static_tf',
+    #     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'map', 'odom'],
     #     output='screen'
     # )
 
@@ -89,9 +89,16 @@ def generate_launch_description():
             os.path.join(robot_navigation_pkg, 'config', 'ekf.yaml')
             # {'use_sim_time': 'false'},
              ],
-        remappings=[
-            ('/odometry/filtered', '/odom')
-        ]
+        # remappings=[
+        #     ('/odometry/filtered', '/odom')
+        # ]
+    )
+
+    imu_puiblisher_node = Node(
+        package='robot_controller',
+        executable='imu_publisher.py',
+        name='imu_publisher',
+        output='screen'
     )
 
     return LaunchDescription([
@@ -102,6 +109,7 @@ def generate_launch_description():
         read_sensor_node,
         robot_decription_launch,
         lidar_launch,
-        ekf_node
-        # odom_to_map
+        ekf_node,
+        # static_tf,
+        imu_puiblisher_node
     ])

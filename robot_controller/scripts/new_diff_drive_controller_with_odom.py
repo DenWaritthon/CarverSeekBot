@@ -81,8 +81,8 @@ class DiffDriveController(Node):
             spd_2 = spd_1[1].split(":")
             dt = time.time() - self.t
             self.t = time.time()
-            self.data["speed_r"] = -float(spd_2[0]) *  2 * math.pi / 2400
-            self.data["speed_l"] = -float(spd_2[1]) *  2 * math.pi / 2400
+            self.data["speed_r"] = float(spd_2[0]) *  2 * math.pi / 1200
+            self.data["speed_l"] = float(spd_2[1]) *  2 * math.pi / 1200
             self.odometry_compute(dt)
         except:
             self.get_logger().error(f'Read wheel speed error!')
@@ -91,32 +91,33 @@ class DiffDriveController(Node):
         # Find x, y, th, v_x, v_y, V_th
         self.integrate(self.wheel_radius,self.wheel_separation,dt)
 
+        q = tf_transformations.quaternion_from_euler(0, 0, self.th)
+
         # Set Odom Traransform Header
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'map'
+        t.child_frame_id = 'base_footprint'
 
         # Set Odom Traransform Data
         t.transform.translation.x = self.x
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0
-        q = tf_transformations.quaternion_from_euler(0, 0, self.th)
         t.transform.rotation.x = q[0]
         t.transform.rotation.y = q[1]
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
 
-        # self.odom_broadcaster.sendTransform(t)
+        self.odom_broadcaster.sendTransform(t)
         
         # Set Odom Header
         odom = Odometry()
         odom.header.stamp = self.get_clock().now().to_msg()
         odom.header.frame_id = "odom"
-        odom.child_frame_id = "map"
+        odom.child_frame_id = "base_footprint"
 
         # Set Odom Position Data
-        odom.pose.pose.position.x = self.x
+        odom.pose.pose.position.x = self.x 
         odom.pose.pose.position.y = self.y
         odom.pose.pose.position.z = 0.0
         odom.pose.pose.orientation.x = q[0]
@@ -153,7 +154,7 @@ class DiffDriveController(Node):
 
     def integrate(self, r, b, dt):
         # Calculate Vx , Vy, Vth (Vy = 0.0)
-        self.vx = (self.data["speed_l"]+self.data["speed_r"])*r/2   
+        self.vx = (self.data["speed_l"]+self.data["speed_r"])*r/2  
         self.vth = (self.data["speed_r"]-self.data["speed_l"])*r/b * 1.0
 
         # Calculate Position x, y, th

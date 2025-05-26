@@ -31,6 +31,8 @@ install(PROGRAMS
   # scripts/new_diff_drive_controller.py
   scripts/new_diff_drive_controller_with_odom.py
   scripts/read_sensor.py
+  scripts/imu_calibrate.py
+  scripts/imu_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -51,6 +53,7 @@ install(TARGETS
 ################ INSTALL LAUNCH, ETC #################
 install(DIRECTORY
   # add directories here
+  config
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()

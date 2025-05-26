@@ -6,6 +6,8 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
+from launch.substitutions import PathJoinSubstitution
+from ament_index_python.packages import get_package_share_directory
 
 
 import math
@@ -116,6 +118,36 @@ def generate_launch_description():
     # )
 
     #mearge lidar
+
+    # Filtter lidar
+    b_scan_filtter = Node(
+            package="laser_filters",
+            executable="scan_to_scan_filter_chain",
+            parameters=[
+                PathJoinSubstitution([
+                    get_package_share_directory("robot_controller"),
+                    "config", "lidar_range_fillter.yaml",
+                ])],
+            remappings=[
+                ('scan', 'b_scan'),
+                ('scan_filtered', 'b_scan_filtered')
+            ],
+        )
+    
+    f_scan_filtter = Node(
+            package="laser_filters",
+            executable="scan_to_scan_filter_chain",
+            parameters=[
+                PathJoinSubstitution([
+                    get_package_share_directory("robot_controller"),
+                    "config", "lidar_range_fillter.yaml",
+                ])],
+            remappings=[
+                ('scan', 'f_scan'),
+                ('scan_filtered', 'f_scan_filtered')
+            ],
+        )
+    
     dual_laser_merger_node = ComposableNodeContainer(
         name='merger_container',
         namespace='',
@@ -127,8 +159,8 @@ def generate_launch_description():
                 plugin='merger_node::MergerNode',
                 name='dual_laser_merger',
                 parameters=[
-                    {'laser_1_topic': '/f_scan'},
-                    {'laser_2_topic': '/b_scan'},
+                    {'laser_1_topic': '/f_scan_filtered'},
+                    {'laser_2_topic': '/b_scan_filtered'},
                     {'merged_topic': '/scan'},
                     {'target_frame': 'base_footprint'},
                     # {'laser_1_x_offset': 0.465},
@@ -171,7 +203,11 @@ def generate_launch_description():
         declare_scan_mode,
         sllidar_node,
         sick_scan_node,
-        dual_laser_merger_node
+        dual_laser_merger_node,
+        b_scan_filtter,
+        f_scan_filtter,
+
         # front_lidar_transform,
+        
         # back_lidar_transform
     ])

@@ -59,7 +59,6 @@ def generate_launch_description():
     )
 
     launchDescriptionObject = LaunchDescription()
-
     launchDescriptionObject.add_action(rviz_launch_arg)
     launchDescriptionObject.add_action(rviz_config_arg)
     launchDescriptionObject.add_action(sim_time_arg)
