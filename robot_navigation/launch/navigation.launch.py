@@ -1,114 +1,97 @@
 import os
-
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
 from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-    # กำหนดตำแหน่งของแพ็คเกจที่เกี่ยวข้อง
-    nav2_bringup_dir = get_package_share_directory('nav2_bringup')
-    # เปลี่ยนชื่อแพ็คเกจด้านล่างให้ตรงกับแพ็คเกจของคุณที่เก็บ map และ parameter
+
     robot_navigation_pkg = get_package_share_directory('robot_navigation')
-    
-    # กำหนดตำแหน่งไฟล์ configuration ต่างๆ
-    rviz_config_file = os.path.join(robot_navigation_pkg, 'rviz', 'navigation.rviz')
-    map_yaml_file = os.path.join(robot_navigation_pkg, 'maps', 'map.yaml')
-    params_file = os.path.join(robot_navigation_pkg, 'params', 'basic_params.yaml')
-    
-    # สร้าง LaunchConfigurations สำหรับการกำหนด argument
-    slam = LaunchConfiguration('slam')
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    
-    # ประกาศ Launch Arguments
-    declare_slam_cmd = DeclareLaunchArgument(
-        'slam',
-        default_value='False',
-        description='Set to "True" to enable SLAM; "False" to use a pre-built map'
+
+    rviz_launch_arg = DeclareLaunchArgument(
+        'rviz', default_value='true',
+        description='Open RViz'
     )
-    
-    declare_use_sim_time_cmd = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulation time if true'
+
+    rviz_config_arg = DeclareLaunchArgument(
+        'rviz_config', default_value='navigation.rviz',
+        description='RViz config file'
     )
-    
-    declare_map_yaml_cmd = DeclareLaunchArgument(
-        'map',
-        default_value=map_yaml_file,
-        description='Full path to map file to load'
+
+    sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time', default_value='false',
+        description='Flag to enable use_sim_time'
     )
-    
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'params_file',
-        default_value=params_file,
-        description='Full path to the ROS2 parameters file to use for all launched nodes'
+
+    # Path to the Slam Toolbox launch file
+    nav2_localization_launch_path = os.path.join(
+        get_package_share_directory('nav2_bringup'),
+        'launch',
+        'localization_launch.py'
     )
-    
-    # รวม launch file ของ nav2_bringup ซึ่งจะเริ่ม node หลักของ navigation
-    bringup_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_dir, 'launch', 'bringup_launch.py')),
+
+    nav2_navigation_launch_path = os.path.join(
+        get_package_share_directory('nav2_bringup'),
+        'launch',
+        'navigation_launch.py'
+    )
+
+    localization_params_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'config',
+        'navigation_params.yaml'
+    )
+
+    navigation_params_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'config',
+        'navigation_params.yaml'
+    )
+
+    map_file_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'maps',
+        'map.yaml'
+    )
+
+    # Launch rviz
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', PathJoinSubstitution([robot_navigation_pkg, 'rviz', LaunchConfiguration('rviz_config')])],
+        condition=IfCondition(LaunchConfiguration('rviz')),
+        parameters=[
+            {'use_sim_time': LaunchConfiguration('use_sim_time')},
+        ]
+    )
+
+    localization_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(nav2_localization_launch_path),
         launch_arguments={
-            'slam': slam,
-            'map': map_yaml_file,
-            'use_sim_time': use_sim_time,
-            'params_file': params_file,
-            'autostart': 'True'
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+                'params_file': localization_params_path,
+                'map': map_file_path,
         }.items()
     )
-    
-    # รวม RViz launch สำหรับการดูสถานะของ navigation (เลือกใช้งานได้)
-    rviz_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_dir, 'launch', 'rviz_launch.py')),
+
+    navigation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(nav2_navigation_launch_path),
         launch_arguments={
-            'namespace': '',
-            'use_sim_time': use_sim_time,
-            'rviz_config': rviz_config_file
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+                'params_file': navigation_params_path,
         }.items()
     )
-    
-    # UNCOMMENT HERE FOR KEEPOUT DEMO
-    start_lifecycle_manager_cmd = Node(
-            package='nav2_lifecycle_manager',
-            executable='lifecycle_manager',
-            name='lifecycle_manager_costmap_filters',
-            output='screen',
-            emulate_tty=True,
-            parameters=[{'use_sim_time': use_sim_time},
-                        {'autostart': True},
-                        {'node_names': ['filter_mask_server', 'costmap_filter_info_server']}])
 
-    start_map_server_cmd = Node(
-            package='nav2_map_server',
-            executable='map_server',
-            name='filter_mask_server',
-            output='screen',
-            emulate_tty=True,
-            parameters=[params_file])
+    launchDescriptionObject = LaunchDescription()
 
-    start_costmap_filter_info_server_cmd = Node(
-            package='nav2_map_server',
-            executable='costmap_filter_info_server',
-            name='costmap_filter_info_server',
-            output='screen',
-            emulate_tty=True,
-            parameters=[params_file])
-    
-    # สร้าง launch description และเพิ่ม action ทั้งหมดลงไป
-    ld = LaunchDescription()
-    ld.add_action(declare_slam_cmd)
-    ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_map_yaml_cmd)
-    ld.add_action(declare_params_file_cmd)
-    ld.add_action(bringup_cmd)
-    ld.add_action(rviz_cmd)
+    launchDescriptionObject.add_action(rviz_launch_arg)
+    launchDescriptionObject.add_action(rviz_config_arg)
+    launchDescriptionObject.add_action(sim_time_arg)
+    launchDescriptionObject.add_action(rviz_node)
+    launchDescriptionObject.add_action(localization_launch)
+    launchDescriptionObject.add_action(navigation_launch)
 
-    # UNCOMMENT HERE FOR KEEPOUT DEMO
-    ld.add_action(start_lifecycle_manager_cmd)
-    ld.add_action(start_map_server_cmd)
-    ld.add_action(start_costmap_filter_info_server_cmd)
-    
-    return ld
-
+    return launchDescriptionObject

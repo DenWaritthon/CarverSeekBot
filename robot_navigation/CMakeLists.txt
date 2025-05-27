@@ -51,7 +51,7 @@ install(DIRECTORY
   launch
   config
   rviz
-  params
+  #params
   maps
   DESTINATION share/${PROJECT_NAME})
 
