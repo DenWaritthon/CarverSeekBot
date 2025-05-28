@@ -1,0 +1,17 @@
+repositories:
+    CarverSeekBot:
+        type: git
+        url: https://github.com/DenWaritthon/CarverSeekBot.git
+        version: Jazzy # หรือ branch/tag ที่คุณต้องการ
+    dual_laser_merger:
+        type: git
+        url: https://github.com/pradyum/dual_laser_merger
+        version: jazzy
+    sick_scan_xd:
+        type: git
+        url: https://github.com/SICKAG/sick_scan_xd
+        version: master 
+    micro_ros_agent:
+        type: git
+        url: https://github.com/micro-ROS/micro-ROS-Agent
+        version: jazzy
