@@ -66,7 +66,7 @@ class ImuCalibNode(Node):
             self.acc_list.append([
                 msg.linear_acceleration.x,
                 msg.linear_acceleration.y,
-                msg.linear_acceleration.z -9.81
+                msg.linear_acceleration.z + 9.81
             ])
 
             self.gyro_list.append([

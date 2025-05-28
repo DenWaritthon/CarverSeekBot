@@ -29,7 +29,7 @@ class DiffDriveController(Node):
         self.cmd_vel_subscription = self.create_subscription(Twist,'/cmd_vel',self.cmd_vel_callback,10)
 
         # Timer loop
-        self.timer = self.create_timer(0.02,self.timer_roboteq_callback)
+        self.timer = self.create_timer(0.01,self.timer_roboteq_callback)
 
         # Odom broadcaster
         self.odom_broadcaster = TransformBroadcaster(self)
@@ -83,6 +83,7 @@ class DiffDriveController(Node):
             self.t = time.time()
             self.data["speed_r"] = float(spd_2[0]) *  2 * math.pi / 1200
             self.data["speed_l"] = float(spd_2[1]) *  2 * math.pi / 1200
+            # self.get_logger().info(f'Wheel speed : {self.data["speed_l"]} , {self.data["speed_r"]}')
             self.odometry_compute(dt)
         except:
             self.get_logger().error(f'Read wheel speed error!')
