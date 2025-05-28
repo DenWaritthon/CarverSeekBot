@@ -90,6 +90,15 @@ def generate_launch_description():
         name='imu_publisher',
         output='screen'
     )
+    
+
+    #Face matching navigation node
+    face_matching_navigation_node = Node(
+        package='face_recognition',
+        executable='face_matcher.py',
+        name='face_matching_navigation_node',
+        output='screen'
+    )
 
     return LaunchDescription([
         declare_joy_type,
@@ -100,5 +109,6 @@ def generate_launch_description():
         robot_decription_launch,
         lidar_launch,
         ekf_node,
-        imu_puiblisher_node
+        imu_puiblisher_node,
+        face_matching_navigation_node
     ])

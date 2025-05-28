@@ -60,15 +60,15 @@ controller_server:
       debug_trajectory_details: true
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.5
+      max_vel_x: 1.5 # 0.5
       max_vel_y: 0.0
-      max_vel_theta: 0.5
+      max_vel_theta: 2.0 #0.5
       min_speed_xy: 0.0
-      max_speed_xy: 0.55
+      max_speed_xy: 1.5 # 0.55
       min_speed_theta: 0.25
-      acc_lim_x: 1.0
-      acc_lim_y: 0.0
-      acc_lim_theta: 0.5
+      acc_lim_x: 3.0 # 1.0
+      acc_lim_y: 0.0 
+      acc_lim_theta: 4.0 # 0.5
       decel_lim_x: -2.5
       decel_lim_y: 0.0
       decel_lim_theta: -3.2
@@ -80,11 +80,12 @@ controller_server:
       angular_granularity: 0.025
       transform_tolerance: 0.2
       xy_goal_tolerance: 0.35 #0.25
-      trans_stopped_velocity: 0.25
+      trans_stopped_velocity: 0.05 #0.25
       short_circuit_trajectory_evaluation: true
       stateful: true
-      critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
-      BaseObstacle.scale: 0.02
+      critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist","ObstacleFootprint"]
+      ObstacleFootprint.scale: 0.2 #0.02
+      BaseObstacle.scale: 0.20 #0.02
       PathAlign.scale: 32.0
       PathAlign.forward_point_distance: 0.1
       GoalAlign.scale: 24.0
@@ -205,8 +206,8 @@ local_costmap:
         filter_info_topic: "/costmap_filter_info"
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        inflation_radius: 0.50 #0.7
+        cost_scaling_factor: 2.0 #3.0
+        inflation_radius: 0.8 #0.7
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: true
@@ -253,7 +254,7 @@ global_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: f_scan_filtered
+          topic: /f_scan_filtered
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -334,10 +335,10 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: false
     feedback: "OPEN_LOOP"
-    max_velocity: [0.5, 0.0, 2.0]
-    min_velocity: [-0.5, 0.0, -2.0]
-    max_accel: [2.5, 0.0, 3.2]
-    max_decel: [-2.5, 0.0, -3.2]
+    max_velocity: [1.5, 0.0, 4.0] # [0.5, 0.0, 2.0]
+    min_velocity: [-0.5, 0.0, -2.0] # [-0.5, 0.0, -2.0]
+    max_accel: [3.0, 0.0, 4.0] # [2.5, 0.0, 3.2]
+    max_decel: [-3.0, 0.0, -4.0] 
     odom_topic: "odometry/filtered" 
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
@@ -351,12 +352,12 @@ collision_monitor:
     cmd_vel_out_topic: "cmd_vel"
     state_topic: "collision_monitor_state"
     transform_tolerance: 0.2
-    source_timeout: 1.0
+    source_timeout: 0.3 # 1.0
     base_shift_correction: true
-    stop_pub_timeout: 2.0
+    stop_pub_timeout: 1.0 #2.0
     # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
     # and robot footprint for "approach" action type.
-    polygons: ["FootprintApproach"]
+    polygons: ["FootprintApproach","PolygonStop","PolygonSlowdown","PolygonFrontStop"]
     FootprintApproach:
       type: "polygon"
       action_type: "approach"
@@ -366,10 +367,32 @@ collision_monitor:
       min_points: 6
       visualize: false
       enabled: true
-    observation_sources: ["f_scan_filtered"]
+    PolygonStop:
+      type: "polygon"
+      action_type: "stop"
+      points: "[[0.45, 0.2], [0.45, -0.2], [-0.45, -0.2], [-0.45, 0.2]]"
+      visualize: true
+      polygon_pub_topic: "polygon_stop"
+      enabled: true
+    PolygonSlowdown:
+      type: "polygon"
+      action_type: "slowdown"
+      points: "[[0.9, 0.4], [0.9, -0.4], [-0.9, -0.4], [-0.9, 0.4]]"
+      slowdown_ratio: 0.3 # 50% slowdown from the max speed
+      visualize: true
+      polygon_pub_topic: "polygon_slow"
+      enabled: true
+    PolygonFrontStop:
+      type: "polygon"
+      action_type: "stop"
+      points: "[[0.6, 0.25], [0.6, -0.25], [0.1, -0.25], [0.1, 0.25]]"
+      visualize: true
+      polygon_pub_topic: "polygon_front_stop"
+      enabled: true
+    observation_sources: ["scan"]
     scan:
       type: "scan"
-      topic: "f_scan_filtered" #Scan_topic
+      topic: "scan" #Scan_topic
       min_height: 0.15
       max_height: 2.0
       enabled: true
