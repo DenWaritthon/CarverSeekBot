@@ -121,5 +121,6 @@ def generate_launch_description():
     launchDescriptionObject.add_action(rviz_node)
     launchDescriptionObject.add_action(localization_launch)
     launchDescriptionObject.add_action(navigation_launch)
+    launchDescriptionObject.add_action(keepout_launch)
 
     return launchDescriptionObject
