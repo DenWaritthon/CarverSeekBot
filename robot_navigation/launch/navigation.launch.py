@@ -39,10 +39,16 @@ def generate_launch_description():
         'navigation_launch.py'
     )
 
+    keepout_launch_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'launch',
+        'keepout.launch.py'
+    )
+
     localization_params_path = os.path.join(
         get_package_share_directory('robot_navigation'),
         'config',
-        'navigation_params.yaml'
+        'amcl_localization.yaml'
     )
 
     navigation_params_path = os.path.join(
@@ -51,11 +57,25 @@ def generate_launch_description():
         'navigation_params.yaml'
     )
 
+    keepout_params_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'config',
+        'keepout_params.yaml'
+    )
+
     map_file_path = os.path.join(
         get_package_share_directory('robot_navigation'),
         'maps',
         'map.yaml'
     )
+
+    # map_keepout_file_path = os.path.join(
+    #     get_package_share_directory('robot_navigation'),
+    #     'maps',
+    #     'map_keepout.yaml'  # You'll need to create this file
+    # )
+
+    map_keepout_file_path = "/home/carver/CarverCAB_ws/src/robot_navigation/maps/map_keepout.yaml"
 
     # Launch rviz
     rviz_node = Node(
@@ -85,8 +105,16 @@ def generate_launch_description():
         }.items()
     )
 
-    launchDescriptionObject = LaunchDescription()
+    keepout_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(keepout_launch_path),
+        launch_arguments={
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+                'params_file': keepout_params_path,
+                'mask': map_keepout_file_path,
+        }.items()
+    )
 
+    launchDescriptionObject = LaunchDescription()
     launchDescriptionObject.add_action(rviz_launch_arg)
     launchDescriptionObject.add_action(rviz_config_arg)
     launchDescriptionObject.add_action(sim_time_arg)
