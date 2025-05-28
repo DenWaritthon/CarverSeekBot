@@ -30,9 +30,10 @@ install(PROGRAMS
   # scripts/dummy_script.py
   # scripts/new_diff_drive_controller.py
   scripts/new_diff_drive_controller_with_odom.py
-  scripts/read_sensor.py
-  scripts/imu_calibrate.py
-  scripts/imu_publisher.py
+  scripts/sensor_controll/read_sensor.py
+  scripts/imu/imu_calibrate.py
+  scripts/imu/imu_publisher.py
+  scripts/lidar/mearge_lidar.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

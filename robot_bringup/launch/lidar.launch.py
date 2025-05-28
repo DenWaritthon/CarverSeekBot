@@ -94,31 +94,9 @@ def generate_launch_description():
                 ('/scan', '/f_scan')
             ]
         )
-    
-    #<origin xyz="0.465 0 -0.2" rpy="3.14 0 0"/>
-    
-    # Static transform for front LIDAR
-    # front_lidar_transform = Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     name='front_lidar_broadcaster',
-    #     arguments=['0.3', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'front_lidar'],
-    #     # Format: x y z yaw pitch roll parent_frame child_frame
-    #     output='screen'
-    # )
-    
-    # Static transform for back LIDAR
-    # back_lidar_transform = Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     name='back_lidar_broadcaster',
-    #     arguments=['-0.3', '0.0', '0.0', '1.57', '0.0', '0.0', 'base_link', 'back_lidar'],
-    #     # Note: back lidar has 180 degree rotation (math.pi) to face backward
-    #     output='screen'
-    # )
 
+    
     #mearge lidar
-
     # Filtter lidar
     b_scan_filtter = Node(
             package="laser_filters",
@@ -126,7 +104,7 @@ def generate_launch_description():
             parameters=[
                 PathJoinSubstitution([
                     get_package_share_directory("robot_controller"),
-                    "config", "lidar_range_fillter.yaml",
+                    "config", "lidar_range_fillter_a1.yaml",
                 ])],
             remappings=[
                 ('scan', 'b_scan'),
@@ -140,7 +118,7 @@ def generate_launch_description():
             parameters=[
                 PathJoinSubstitution([
                     get_package_share_directory("robot_controller"),
-                    "config", "lidar_range_fillter.yaml",
+                    "config", "lidar_range_fillter_sick.yaml",
                 ])],
             remappings=[
                 ('scan', 'f_scan'),
@@ -169,11 +147,12 @@ def generate_launch_description():
                     # {'laser_2_x_offset': -0.465},
                     # {'laser_2_y_offset': 0.0},
                     {'laser_2_yaw_offset': -1.57079632679},
-                    {'tolerance': 0.01},
+                    {'publish_rate': 133},
+                    {'tolerance': 0.15},
                     {'queue_size': 5},
                     {'angle_increment': 0.001},
                     {'scan_time': 0.067},
-                    {'range_min': 0.01},
+                    {'range_min': 0.275},
                     {'range_max': 25.0},
                     {'min_height': -1.0},
                     {'max_height': 1.0},
@@ -193,6 +172,18 @@ def generate_launch_description():
         output='screen'
     )
 
+    # mearge_lidar_node = Node(
+    #     package='robot_controller',
+    #     executable='mearge_lidar.py',
+    #     name='mearge_lidar_node',
+    #     output='screen',
+    #     # remappings=[
+    #     #     ('/f_scan_filtered', '/f_scan_filtered'),
+    #     #     ('/b_scan_filtered', '/b_scan_filtered'),
+    #     #     ('/scan', '/scan')
+    #     # ]
+    # )
+
     return LaunchDescription([
         declare_channel_type,
         declare_serial_port,
@@ -204,6 +195,7 @@ def generate_launch_description():
         sllidar_node,
         sick_scan_node,
         dual_laser_merger_node,
+        # mearge_lidar_node,
         b_scan_filtter,
         f_scan_filtter,
 

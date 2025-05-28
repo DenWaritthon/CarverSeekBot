@@ -13,10 +13,8 @@ def generate_launch_description():
     # Define LaunchConfiguration objects
     joy_type = LaunchConfiguration('joy_type', default='xbox')
 
-
     robot_navigation_pkg = get_package_share_directory('robot_navigation')
     robot_bringup_pkg = get_package_share_directory('robot_bringup')
-
 
     # Create launch argument declarations
     declare_joy_type = DeclareLaunchArgument(
@@ -86,7 +84,7 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[
-            os.path.join(robot_navigation_pkg, 'config', 'new_ekf.yaml')
+            os.path.join(robot_navigation_pkg, 'config', 'ekf.yaml')
             # {'use_sim_time': 'false'},
              ],
         # remappings=[
@@ -109,7 +107,7 @@ def generate_launch_description():
         read_sensor_node,
         robot_decription_launch,
         lidar_launch,
-        # ekf_node,
+        ekf_node,
         # static_tf,
         imu_puiblisher_node
     ])

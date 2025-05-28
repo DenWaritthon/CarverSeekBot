@@ -32,7 +32,7 @@ class DiffDriveController(Node):
         self.timer = self.create_timer(0.01,self.timer_roboteq_callback)
 
         # Odom broadcaster
-        self.odom_broadcaster = TransformBroadcaster(self)
+        # self.odom_broadcaster = TransformBroadcaster(self)
 
         # Variables
         # Mobile variables
@@ -109,7 +109,7 @@ class DiffDriveController(Node):
         t.transform.rotation.z = q[2]
         t.transform.rotation.w = q[3]
 
-        self.odom_broadcaster.sendTransform(t)
+        # self.odom_broadcaster.sendTransform(t)
         
         # Set Odom Header
         odom = Odometry()

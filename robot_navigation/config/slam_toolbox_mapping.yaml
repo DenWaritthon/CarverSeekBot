@@ -22,7 +22,7 @@ slam_toolbox:
     # will use pose
     #map_file_name: test_steve
     # map_start_pose: [0.0, 0.0, 0.0]
-    #map_start_at_dock: true
+    #map_start_at_dock: truec
 
     debug_logging: false
     throttle_scans: 1
