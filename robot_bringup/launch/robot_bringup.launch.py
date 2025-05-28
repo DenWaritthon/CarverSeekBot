@@ -12,7 +12,6 @@ import os
 def generate_launch_description():
     # Define LaunchConfiguration objects
     joy_type = LaunchConfiguration('joy_type', default='xbox')
-
     robot_navigation_pkg = get_package_share_directory('robot_navigation')
     robot_bringup_pkg = get_package_share_directory('robot_bringup')
 
@@ -25,7 +24,7 @@ def generate_launch_description():
     # DiffDrive node
     diffdrive_node = Node(
         package='robot_controller',
-        executable='new_diff_drive_controller_with_odom.py',
+        executable='diffdrive_controller.py',
         name='diff_drive_controller',
         output='screen',
     )
@@ -62,15 +61,6 @@ def generate_launch_description():
         output='screen'
     )
 
-    # # Odom to map static transform publisher
-    # static_tf= Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     name='static_tf',
-    #     arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'map', 'odom'],
-    #     output='screen'
-    # )
-
     # Lidar launch
     lidar_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -78,6 +68,7 @@ def generate_launch_description():
         )    
     )
 
+    #EKF node
     ekf_node = Node(
         package='robot_localization',
         executable='ekf_node',
@@ -92,6 +83,7 @@ def generate_launch_description():
         # ]
     )
 
+    #IMU publisher node
     imu_puiblisher_node = Node(
         package='robot_controller',
         executable='imu_publisher.py',
@@ -108,6 +100,5 @@ def generate_launch_description():
         robot_decription_launch,
         lidar_launch,
         ekf_node,
-        # static_tf,
         imu_puiblisher_node
     ])

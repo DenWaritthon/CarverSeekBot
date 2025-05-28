@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+# filepath: /home/carver/CarverCAB_ws/src/robot_controller/scripts/read_sensor.py
 
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Twist
+from std_srvs.srv import SetBool
 import time
 
 class SensorMonitorNode(Node):
@@ -22,68 +23,76 @@ class SensorMonitorNode(Node):
         self.emer_sub = self.create_subscription(
             Bool, '/sensor/emer', self.emer_callback, 10)
         
-        # Create cmd_vel publisher
-        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        
         # State of rising edge
         self.prev_limit_br = False
         self.prev_limit_bl = False
         self.prev_limit_fr = False
         self.prev_limit_fl = False
+
         self.prev_emer_triger = False
         
+        # Create service client
+        self.motor_client = self.create_client(SetBool, '/command/motor')
+        
+        # Wait for service to be available
+        while not self.motor_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service /command/motor not available, waiting...')
+        
         self.get_logger().info('Sensor monitor node started')
-        self.last_command_time = time.time()
-        self.command_cooldown = 0.5  # 500ms cooldown between commands
+        self.last_service_call_time = time.time()
+        self.service_cooldown = 0.5  # 500ms cooldown between service calls
     
-    def send_cmd_vel(self, linear_x, sensor_name):
-        # Check if we should throttle commands
+    def call_motor_service(self, sensor_name):
+        # Check if we should throttle service calls
         current_time = time.time()
-        if current_time - self.last_command_time < self.command_cooldown:
+        if current_time - self.last_service_call_time < self.service_cooldown:
             return
             
-        self.get_logger().warn(f'{sensor_name} triggered! Sending cmd_vel: linear_x={linear_x}')
+        self.get_logger().warn(f'{sensor_name} triggered! Stopping motors')
         
-        # Create and send Twist message
-        twist_msg = Twist()
-        twist_msg.linear.x = linear_x
-        twist_msg.linear.y = 0.0
-        twist_msg.linear.z = 0.0
-        twist_msg.angular.x = 0.0
-        twist_msg.angular.y = 0.0
-        twist_msg.angular.z = 0.0
+        # Create request
+        request = SetBool.Request()
+        request.data = False
         
-        self.cmd_vel_pub.publish(twist_msg)
-        self.last_command_time = current_time
+        # Call service
+        future = self.motor_client.call_async(request)
+        future.add_done_callback(self.service_callback)
+        self.last_service_call_time = current_time
+        
+    def service_callback(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info('Successfully stopped motors')
+            else:
+                self.get_logger().error(f'Failed to stop motors: {response.message}')
+        except Exception as e:
+            self.get_logger().error(f'Service call failed: {e}')
     
     def limit_fl_callback(self, msg):
         if msg.data and not self.prev_limit_fl:
-            # Front limit triggered - go back
-            self.send_cmd_vel(-0.5, 'Front Left Limit Sensor')
+            self.call_motor_service('Front Left Limit Sensor')
         self.prev_limit_fl = msg.data
     
     def limit_fr_callback(self, msg):
         if msg.data and not self.prev_limit_fr:
-            # Front limit triggered - go back
-            self.send_cmd_vel(-0.5, 'Front Right Limit Sensor')
+            self.call_motor_service('Front Right Limit Sensor')
         self.prev_limit_fr = msg.data
 
     def limit_bl_callback(self, msg):
         if msg.data and not self.prev_limit_bl:
-            # Back limit triggered - go forward
-            self.send_cmd_vel(0.5, 'Back Left Limit Sensor')
+            self.call_motor_service('Back Left Limit Sensor')
         self.prev_limit_bl = msg.data
     
     def limit_br_callback(self, msg):
         if msg.data and not self.prev_limit_br:
-            # Back limit triggered - go forward
-            self.send_cmd_vel(0.5, 'Back Right Limit Sensor')
+            print("Tricker")
+            self.call_motor_service('Back Right Limit Sensor')
         self.prev_limit_br = msg.data
     
     def emer_callback(self, msg):
         if msg.data and not self.prev_emer_triger:
-            # Emergency - stop
-            self.send_cmd_vel(0.0, 'Emergency Sensor')
+            self.call_motor_service('Emergency Sensor')
         self.prev_emer_triger = msg.data
 
 

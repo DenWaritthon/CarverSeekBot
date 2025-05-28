@@ -96,8 +96,22 @@ def generate_launch_description():
         )
 
     
-    #mearge lidar
-    # Filtter lidar
+    # Range Filter for Front Lidar
+    f_scan_filtter = Node(
+            package="laser_filters",
+            executable="scan_to_scan_filter_chain",
+            parameters=[
+                PathJoinSubstitution([
+                    get_package_share_directory("robot_controller"),
+                    "config", "lidar_range_fillter_sick.yaml",
+                ])],
+            remappings=[
+                ('scan', 'f_scan'),
+                ('scan_filtered', 'f_scan_filtered')
+            ],
+        )
+
+    # Range Filter for Back Lidar
     b_scan_filtter = Node(
             package="laser_filters",
             executable="scan_to_scan_filter_chain",
@@ -112,20 +126,7 @@ def generate_launch_description():
             ],
         )
     
-    f_scan_filtter = Node(
-            package="laser_filters",
-            executable="scan_to_scan_filter_chain",
-            parameters=[
-                PathJoinSubstitution([
-                    get_package_share_directory("robot_controller"),
-                    "config", "lidar_range_fillter_sick.yaml",
-                ])],
-            remappings=[
-                ('scan', 'f_scan'),
-                ('scan_filtered', 'f_scan_filtered')
-            ],
-        )
-    
+    # Dual Laser Merger Node
     dual_laser_merger_node = ComposableNodeContainer(
         name='merger_container',
         namespace='',
@@ -172,18 +173,6 @@ def generate_launch_description():
         output='screen'
     )
 
-    # mearge_lidar_node = Node(
-    #     package='robot_controller',
-    #     executable='mearge_lidar.py',
-    #     name='mearge_lidar_node',
-    #     output='screen',
-    #     # remappings=[
-    #     #     ('/f_scan_filtered', '/f_scan_filtered'),
-    #     #     ('/b_scan_filtered', '/b_scan_filtered'),
-    #     #     ('/scan', '/scan')
-    #     # ]
-    # )
-
     return LaunchDescription([
         declare_channel_type,
         declare_serial_port,
@@ -195,11 +184,6 @@ def generate_launch_description():
         sllidar_node,
         sick_scan_node,
         dual_laser_merger_node,
-        # mearge_lidar_node,
         b_scan_filtter,
         f_scan_filtter,
-
-        # front_lidar_transform,
-        
-        # back_lidar_transform
     ])

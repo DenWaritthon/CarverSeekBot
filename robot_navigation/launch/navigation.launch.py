@@ -69,13 +69,13 @@ def generate_launch_description():
         'map.yaml'
     )
 
-    # map_keepout_file_path = os.path.join(
-    #     get_package_share_directory('robot_navigation'),
-    #     'maps',
-    #     'map_keepout.yaml'  # You'll need to create this file
-    # )
+    map_keepout_file_path = os.path.join(
+        get_package_share_directory('robot_navigation'),
+        'maps',
+        'map_keepout.yaml'  # You'll need to create this file
+    )
 
-    map_keepout_file_path = "/home/carver/CarverCAB_ws/src/robot_navigation/maps/map_keepout.yaml"
+    # map_keepout_file_path = "/home/carver/CarverCAB_ws/src/robot_navigation/maps/map_keepout.yaml"
 
     # Launch rviz
     rviz_node = Node(
