@@ -15,13 +15,12 @@ from std_srvs.srv import SetBool
 def cosine_similarity(vec1, vec2):
     return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2) + 1e-6)
 
-
 class FaceMatcherNode(Node):
     def __init__(self):
         super().__init__('face_match_node')
 
         # --- Configuration ---
-        self.face_id = '000'
+        self.face_id = '002'
         scripts_dir = os.path.dirname(os.path.abspath(__file__))
         self.emb_path = os.path.abspath(os.path.join(scripts_dir, "..", "..", "share", "face_recognition", "database", f"face_{self.face_id}.npy"))
 

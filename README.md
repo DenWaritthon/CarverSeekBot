@@ -13,11 +13,16 @@ Checklit
 **Need to reformat code**
 
 # H2 Launch this project
-1. Launch bringup
+
+1. Run IMU
+```bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/m5c
+```
+2. Launch bringup
 ```bash
 ros2 launch robot_bringup robot_bringup.launch.py
 ```
-2. Launch navigation (Nav2)
+3. Launch navigation (Nav2)
 ```bash
 ros2 launch robot_navigation navigation.launch.py
 ```

@@ -254,7 +254,7 @@ global_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: /f_scan_filtered
+          topic: f_scan_filtered #Scan_topic
           max_obstacle_height: 2.0
           clearing: true
           marking: true
