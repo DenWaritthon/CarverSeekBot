@@ -1,13 +1,19 @@
 # CarverSeekBot ROS2
-Project Restore CarverCap to CarverSeekBot
+Project Restore CarverCab to CarverSeekBot
 
-Update 31/05/68
+Update 31/05/68 [21.48]
+
+Uncomplete 
+- Face Matching method
+-  Using Seek mode
 
 **Need to reformat code and Code Comment**
 
 # Table of content
-- [CarverSeekBot ROS2](#carverseekbot-ros2)
-- [Table of content](#table-of-content)
+- [Technical overview](#technical-overview)
+  - [System Architecture](#system-architecture)
+  - [Mobile Robot Development method](#mobile-robot-development-method)
+  - [Face Matching method](#face-matching-method)
 - [How to install](#how-to-install)
   - [Prerequisites](#prerequisites)
     - [Software Requirements](#software-requirements)
@@ -20,9 +26,22 @@ Update 31/05/68
     - [1.1 IMU Calibration](#11-imu-calibration)
   - [2. Launch bringup](#2-launch-bringup)
   - [3. Launch navigation (Nav2)](#3-launch-navigation-nav2)
-  - [3.1 Using SLAM for mapping](#31-using-slam-for-mapping)
+    - [3.1 Using SLAM for mapping](#31-using-slam-for-mapping)
+    - [3.2 Using Seek mode](#32-using-seek-mode)
+- [Demo](#demo)
 - [Future plan](#future-plan)
+- [Inspection of mechanical and electrical problems](#inspection-of-mechanical-and-electrical-problems)
 - [Developer Member](#developer-member)
+
+# Technical overview
+## System Architecture
+<img src="Image/SystemArchitecture.png" width=100% height=100%>
+
+## Mobile Robot Development method
+* Use Nav2 package is base on develop robot navigation for Carver Cab.
+* Use Robot Localized package for use Extended Kalman Filter. 
+
+## Face Matching method
 
 # How to install
 ## Prerequisites
@@ -31,7 +50,7 @@ Ensure you have the following dependencies installed
 * [Ubuntu 24.04 (Noble Numbat)](https://releases.ubuntu.com/noble/)
 * [ROS2 Jazzy](https://docs.ros.org/en/jazzy/index.html)
 
-Ros2 Package
+ROS2 Package
 * [SLAM Toobox](https://docs.nav2.org/tutorials/docs/navigation2_with_slam.html) this package is used to perform SLAM mapping.
 * [Nav2](https://docs.nav2.org/getting_started/index.html) this package for using Navigation
 * [robot_localization](https://docs.ros.org/en/melodic/api/robot_localization/html/index.html) this package for using Navigation
@@ -133,7 +152,7 @@ The navigation system is currently configured to operate exclusively on the 5th 
 ros2 launch robot_navigation navigation.launch.py
 ```
 
-## 3.1 Using SLAM for mapping 
+### 3.1 Using SLAM for mapping 
 When Need to create map for navigation
 ```bash
 ros2 launch robot_navigation mapping.launch.py
@@ -145,18 +164,34 @@ ros2 launch robot_navigation savemap.launch.py
 > [!NOTE]
 >  Once a map is successfully generated, it will be saved to your **`/home/`** directory. Each generated map will have a **unique ID** appended to its filename, ensuring no conflicts occur.
 > *(Special thanks to AJ.Nook for this feature.)*
-> 
+>
+
+### 3.2 Using Seek mode
+
+
+# Demo
+[![Demo](<Image/Demo.png>)](https://youtu.be/qn1z8EDL6n8?si=YRryRpS-QOs2_JkA)
+**Click to watch VDO**
 # Future plan
-* Fine-tune Nav2 parameters for improved navigation accuracy\
+* Update power input for NUC from 12VDC to 19VDC for use full performance of NUC
+* Fine-tune Nav2 parameters for improved navigation accuracy
 * Implement automatic reverse movement upon obstacle collision during navigation
-* Add a front bumper to the robot (design completed, pending laser sensor integration)
+* Add a front bumper to the robot (design completed, pending laser cut and sensor integration)
 * Integrate a navigation camera (e.g., Intel RealSense) — currently under research
 * Add state management system to handle robot behavior transitions
 * Integrate LiDAR intensity data from the front sensor to enhance navigation capabilities (not yet implemented)
 * Investigate and resolve discrepancies when merging data from the two LiDAR sensors (RPLiDAR A1M8 and SICK TIM781S)
+
+# Inspection of mechanical and electrical problems
+This part for check list in case Carver Cab have an Electrical and Mechanical Problems.
+
+* In case the NUC does not power on automatically after turning off the power switch and waiting for 3 minutes, you can unplug the power and plug it back in, as there is not enough power to start the NUC at startup.
+* Sensor and Motor not have input voltage — check cable connection at PS1 and PS2 terminal
+* In case limit switch don't update data after bumper attack — check if the fastening nuts have moved.
+* If the Carver Cab vibrates more than normal during movement — check the front support wheels to make sure they are in good condition (since the wheels have worn out springs, they need to be supported with rubber pads).
   
 # Developer Member
-* 643405..... - ...
+* 64340500049 - Wasupol Hengsritawat
 * 65340500004 - Kraiwich Vichakhot
 * 65340500014 - Chawaphon Wachiraniramit
 * 65340500050 - Waritthon Kongnoo
