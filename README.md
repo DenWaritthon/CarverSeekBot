@@ -156,6 +156,7 @@ ros2 launch robot_navigation savemap.launch.py
 * Investigate and resolve discrepancies when merging data from the two LiDAR sensors (RPLiDAR A1M8 and SICK TIM781S)
   
 # Developer Member
+* 643405..... - ...
 * 65340500004 - Kraiwich Vichakhot
 * 65340500014 - Chawaphon Wachiraniramit
 * 65340500050 - Waritthon Kongnoo
