@@ -7,8 +7,7 @@ from rclpy.node import Node
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
 from std_srvs.srv import Trigger
-from geometry_msgs.srv import SetPose
-
+from robot_interfaces.srv import Target2Go
 
 class NavigateClient(Node):
     def __init__(self):
@@ -24,7 +23,7 @@ class NavigateClient(Node):
         
         # Services
         self.set_position_srv = self.create_service(
-            SetPose,
+            Target2Go,
             'set_navigation_position',
             self.set_position_callback
         )
@@ -37,7 +36,7 @@ class NavigateClient(Node):
         
         self.cancel_navigation_srv = self.create_service(
             Trigger,
-            'cancel_navigation',
+            'face_matched',
             self.cancel_navigation_callback
         )
         
@@ -49,10 +48,10 @@ class NavigateClient(Node):
     def set_position_callback(self, request, response):
         """Service callback to set target position"""
         try:
-            self.target_x = request.pose.position.x
-            self.target_y = request.pose.position.y
-            self.target_z = request.pose.position.z
-            self.target_orientation_w = request.pose.orientation.w
+            self.target_x = request.target.x
+            self.target_y = request.target.y
+            self.target_z = request.target.z
+            self.target_orientation_w = request.target.w
             
             response.success = True
             response.message = f"Position set to x={self.target_x:.2f}, y={self.target_y:.2f}, z={self.target_z:.2f}, w={self.target_orientation_w:.2f}"
@@ -69,7 +68,8 @@ class NavigateClient(Node):
     def start_navigation_callback(self, request, response):
         """Service callback to start navigation to set position"""
         try:
-            if self._goal_handle and not self._goal_handle.get_status():
+            # Check if there's already an active goal
+            if self._goal_handle and not self._goal_handle.is_cancel_requested:
                 response.success = False
                 response.message = "Navigation already in progress"
                 return response
@@ -82,7 +82,6 @@ class NavigateClient(Node):
             response.success = False
             response.message = f"Error starting navigation: {str(e)}"
             self.get_logger().error(f"Failed to start navigation: {e}")
-        
         return response
 
     def cancel_navigation_callback(self, request, response):

@@ -11,7 +11,7 @@ repositories:
         type: git
         url: https://github.com/Slamtec/sllidar_ros2
         version: main
-    micro_ros_Agent:
+    micro-ROS-Agent:
         type: git
         url: https://github.com/micro-ROS/micro-ROS-Agent
         version: jazzy
