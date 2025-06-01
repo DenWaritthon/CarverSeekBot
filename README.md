@@ -9,6 +9,8 @@ Uncomplete
 **Need to reformat code and Code Comment**
 
 # Table of content
+- [CarverSeekBot ROS2](#carverseekbot-ros2)
+- [Table of content](#table-of-content)
 - [Technical overview](#technical-overview)
   - [System Architecture](#system-architecture)
   - [Mobile Robot Development method](#mobile-robot-development-method)
@@ -59,6 +61,7 @@ ROS2 Package
 Python Libraries:
 * [PyRoboteq](https://pypi.org/project/PyRoboteq/0.0.9/) this package for Motor Controll on CarverSeekBot
 * [Python OpenCV](https://pypi.org/project/opencv-python/) this package for face recognition
+* [insightface](https://pypi.org/project/insightface/) this package for face recognition
 > [!NOTE]
 > "I'm not entirely sure if the list of packages is exhaustive.
 
@@ -78,6 +81,8 @@ Python Libraries:
 >* NUC: 192.168.1.195
 >
 > These IP addresses are hardcoded for specific devices to ensure consistent communication within the CarverSeekBot system
+> 
+>**RouterOS Version:** If you need to reconfigure the MikroTik hAP ac lite tc, please ensure you use **RouterOS 6 only**. This specific model (MikroTik hAP ac lite tc) does **not support RouterOS 7**.
 
 ## 1. Make Workspace
 ```bash

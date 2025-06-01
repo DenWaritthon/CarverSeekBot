@@ -11,6 +11,7 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from std_srvs.srv import SetBool
+from std_msgs.msg import String
 
 def cosine_similarity(vec1, vec2):
     return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2) + 1e-6)
@@ -48,8 +49,13 @@ class FaceMatcherNode(Node):
         # self.matched_pub = self.create_publisher(Bool, '/face_matched', 10)
         self.img_pub = self.create_publisher(Image, '/camera/image', 10)
 
-        self.bridge = CvBridge()
+        self.change_face_srv = self.create_service(
+            String, 
+            'change_face_id', 
+            self.change_face_id_callback
+        )
 
+        self.bridge = CvBridge()
         self.state = False
 
     def set_matched_request(self, status: bool)->None:
@@ -98,6 +104,29 @@ class FaceMatcherNode(Node):
             self.img_pub.publish(ros_image)
         except Exception as e:
             self.get_logger().error(f'Error converting image: {e}')
+
+    def change_face_id_callback(self, request, response):
+        """Service callback to change face_id"""
+        new_face_id = request.data.strip()
+        
+        if not new_face_id:
+            response.data = f"Error: Empty face_id provided"
+            return response
+        
+        old_face_id = self.face_id
+        self.face_id = new_face_id
+        
+        # Try to load the new embedding
+        if self.load_face_embedding():
+            response.data = f"Successfully changed face_id from '{old_face_id}' to '{new_face_id}'"
+            self.get_logger().info(f"Face ID changed to: {new_face_id}")
+        else:
+            # Revert to old face_id if loading fails
+            self.face_id = old_face_id
+            self.load_face_embedding()
+            response.data = f"Error: Could not load embedding for face_id '{new_face_id}'. Reverted to '{old_face_id}'"
+        
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
