@@ -1,10 +1,9 @@
 # CarverSeekBot ROS2
 Project Restore CarverCab to CarverSeekBot
 
-Update 31/05/68 [21.48]
+Update 1/06/68 [15.43]
 
 Uncomplete 
-- Face Matching method
 -  Using Seek mode
 
 **Need to reformat code and Code Comment**
@@ -42,6 +41,7 @@ Uncomplete
 * Use Robot Localized package for use Extended Kalman Filter. 
 
 ## Face Matching method
+Use the buffalo_l model from [InsightFace](https://github.com/deepinsight/insightface) Opensource. This model can perform face recognition, face detection, face alignment, and facial feature analysis. All functions can be developed into a search mode to turn CarverCap into CarverSeekBot.
 
 # How to install
 ## Prerequisites
