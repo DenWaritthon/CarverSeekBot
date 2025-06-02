@@ -34,6 +34,3 @@ This code is referenced from an CarverCAB older version. Remove references to `t
 | 17          | led_indigo       | Activate green and blue LEDs (indigo)    |True       |
 | 20          | start_motor  | Initiate the motor start sequence        |               |
 | 21          | stop_motor   | Initiate the motor stop sequence         |               |
-
-# Developer
-* 65340500004 - Kraiwich Vichakhot
