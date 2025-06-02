@@ -100,6 +100,14 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Cancel navigation node
+    cancel_navigation_node = Node(
+        package='robot_navigation',
+        executable='cancel_navigation_service.py',
+        name='cancel_navigation_service',
+        output='screen'
+    )
+
     return LaunchDescription([
         declare_joy_type,
         teleop_launch,
@@ -110,5 +118,6 @@ def generate_launch_description():
         lidar_launch,
         ekf_node,
         imu_puiblisher_node,
-        face_matching_navigation_node
+        face_matching_navigation_node,
+        cancel_navigation_node
     ])

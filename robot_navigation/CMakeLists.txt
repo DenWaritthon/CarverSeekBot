@@ -29,6 +29,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   # scripts/dummy_script.py
   scripts/command/cancel_navigation_service.py
+  scripts/command/cancel_navigation_service_fix_path.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

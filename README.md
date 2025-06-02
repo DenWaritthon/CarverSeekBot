@@ -62,6 +62,9 @@ Python Libraries:
 * [PyRoboteq](https://pypi.org/project/PyRoboteq/0.0.9/) this package for Motor Controll on CarverSeekBot
 * [Python OpenCV](https://pypi.org/project/opencv-python/) this package for face recognition
 * [insightface](https://pypi.org/project/insightface/) this package for face recognition
+* [onnxruntime](https://pypi.org/project/onnxruntime/) this package for face recognition
+* [ModbusTCP](https://pypi.org/project/pyModbusTCP/) this package for Communication with Controllino
+  
 > [!NOTE]
 > "I'm not entirely sure if the list of packages is exhaustive.
 
@@ -172,6 +175,7 @@ ros2 launch robot_navigation savemap.launch.py
 >
 
 ### 3.2 Using Seek mode
+
 
 
 # Demo
