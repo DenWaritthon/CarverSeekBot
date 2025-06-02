@@ -192,7 +192,7 @@ void ReadCommand(){
     digitalWrite(stop_switch, LOW);
     delay(1000); // Wait for 1 second
     digitalWrite(start_switch, LOW);
-    modbusTCPServer.coilWrite(18, 0);
+    modbusTCPServer.coilWrite(20, 0);
   }
   if (modbusTCPServer.coilRead(21)){
     // coil21 → stop_motor
@@ -200,6 +200,6 @@ void ReadCommand(){
     digitalWrite(stop_switch, HIGH);
     delay(1000); // Wait for 1 second
     digitalWrite(stop_switch, LOW);
-    modbusTCPServer.coilWrite(19, 0);
+    modbusTCPServer.coilWrite(21, 0);
   }
 }

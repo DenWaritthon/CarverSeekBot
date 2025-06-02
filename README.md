@@ -1,12 +1,13 @@
 # Coil Mapping Reference
 
-This code is referenced from an older version. Remove references to `touchless_switch` and `Alcohol`.
+This code is referenced from an CarverCAB older version. Remove references to `touchless_switch` and `Alcohol`.
 
 # Change log
 
-`update 10-05-2568`
+`update 2-06-2568`
 * **Disable LED Command ALL** because it is no longer in use
 * **Change Emer to realworld** Reversed the behavior of the 'Emer' switch: true now represents false, and false represents true
+* **FIX issue bug** Resolved Rapid Callback Execution: A bug causing the Controllino to perform actions too frequently due to a misaligned coil callback has been fixed. This ensures more precise and controlled operation.
 
 ## Sensor Readings 
 
@@ -33,3 +34,6 @@ This code is referenced from an older version. Remove references to `touchless_s
 | 17          | led_indigo       | Activate green and blue LEDs (indigo)    |True       |
 | 20          | start_motor  | Initiate the motor start sequence        |               |
 | 21          | stop_motor   | Initiate the motor stop sequence         |               |
+
+# Developer
+* 65340500004 - Kraiwich Vichakhot
