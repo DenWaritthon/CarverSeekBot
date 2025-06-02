@@ -1,16 +1,16 @@
 # CarverSeekBot ROS2
 Project Restore CarverCab to CarverSeekBot
 
-Update 1/06/68 [15.43]
 
-Uncomplete 
--  Using Seek mode
+## Update Log
+Update 2/06/68 [11.20]
 
-**Need to reformat code and Code Comment**
+**Code requires refactoring and proper commenting.**
 
-# Table of content
+# Table of contents
 - [CarverSeekBot ROS2](#carverseekbot-ros2)
-- [Table of content](#table-of-content)
+  - [Update Log](#update-log)
+- [Table of contents](#table-of-contents)
 - [Technical overview](#technical-overview)
   - [System Architecture](#system-architecture)
   - [Mobile Robot Development method](#mobile-robot-development-method)
@@ -29,6 +29,9 @@ Uncomplete
   - [3. Launch navigation (Nav2)](#3-launch-navigation-nav2)
     - [3.1 Using SLAM for mapping](#31-using-slam-for-mapping)
     - [3.2 Using Seek mode](#32-using-seek-mode)
+      - [3.2.1 Fixed Path Navigation](#321-fixed-path-navigation)
+      - [3.2.2 Custom Path Navigation (Service-Based)](#322-custom-path-navigation-service-based)
+      - [3.2.3 Face Matching Configuration](#323-face-matching-configuration)
 - [Demo](#demo)
 - [Future plan](#future-plan)
 - [Inspection of mechanical and electrical problems](#inspection-of-mechanical-and-electrical-problems)
@@ -39,7 +42,7 @@ Uncomplete
 <img src="Image/SystemArchitecture.png" width=100% height=100%>
 
 ## Mobile Robot Development method
-* Use Nav2 package is base on develop robot navigation for Carver Cab.
+* Use Nav2 package is base on develop robot navigation for CarverSeekBot
 * Use Robot Localized package for use Extended Kalman Filter. 
 
 ## Face Matching method
@@ -59,7 +62,7 @@ ROS2 Package
 * [teleop-twist-joy](https://index.ros.org/p/teleop_twist_joy/) this package for Joy Controller
   
 Python Libraries:
-* [PyRoboteq](https://pypi.org/project/PyRoboteq/0.0.9/) this package for Motor Controll on CarverSeekBot
+* [PyRoboteq](https://pypi.org/project/PyRoboteq/0.0.9/) this package for Motor Control on CarverSeekBot
 * [Python OpenCV](https://pypi.org/project/opencv-python/) this package for face recognition
 * [insightface](https://pypi.org/project/insightface/) this package for face recognition
 * [onnxruntime](https://pypi.org/project/onnxruntime/) this package for face recognition
@@ -69,11 +72,11 @@ Python Libraries:
 > "I'm not entirely sure if the list of packages is exhaustive.
 
 ### Hardware
-* [SICK TIM781S](https://www.sick.com/es/en/catalog/products/lidar-and-radar-sensors/lidar-sensors/tim/tim781s-2174104/p/p594149) for font lidar
+* [SICK TIM781S](https://www.sick.com/es/en/catalog/products/lidar-and-radar-sensors/lidar-sensors/tim/tim781s-2174104/p/p594149) for front lidar
 * RPLidar A1M8 for back lidar
-* [Controllino maxi automation](https://www.controllino.com/product/controllino-maxi-automation/) for Manages collision sensors (front/rear, left/right) and handles motor control signals (Emergency, Start, Stop) for motor actuation.
+* [Controllino maxi automation](https://www.Controllino.com/product/Controllino-maxi-automation/) for Manages collision sensors (front/rear, left/right) and handles motor control signals (Emergency, Start, Stop) for motor actuation.
 * [M5SitckC](https://shop.m5stack.com/products/stick-c?variant=43982750843137) for IMU
-* Intel NUC for Main Controll CarverSeekBot
+* Intel NUC for Main Control CarverSeekBot
 * [mikrotik hap ac lite tc](https://mikrotik.com/product/RB952Ui-5ac2nD-TC) for Network on CarverSeekbot
 
 > [!NOTE]
@@ -176,6 +179,45 @@ ros2 launch robot_navigation savemap.launch.py
 
 ### 3.2 Using Seek mode
 
+The robot's "Seek Mode" currently offers two distinct methods for defining and executing navigation paths:
+
+#### 3.2.1 Fixed Path Navigation
+
+This method utilizes a pre-defined, fixed destination. Upon launching the associated node, the robot will automatically navigate to a target coordinate of `x: 8, y: 0, z: 0.` During this navigation, the system will monitor for a specific face detection, as determined by the `face_matcher node`. If the specified face is detected, a command will be sent to cancel the ongoing navigation.
+
+Usage:
+```bash
+ros2 run robot_navigation cancel_navigation_service_fix_path.py
+```
+
+#### 3.2.2 Custom Path Navigation (Service-Based)
+This method allows for dynamic definition of the robot's target destination using a ROS2 service. You can specify the desired target coordinates by calling the /set_navigation_position service:
+
+Set Target Position:
+```bash
+ros2 service call /set_navigation_position robot_interfaces/srv/Target2Go "target:
+  x: 8.0
+  y: 0.0
+  z: 0.0
+  w: 1.0"
+```
+Once the target position is set, you can initiate the navigation process by calling the start_navigation service:
+
+Start Navigation:
+```bash
+ros2 service call /start_navigation std_srvs/srv/Trigger "{}"
+```
+> [!NOTE]
+> This "Custom Path Navigation" mode has not yet been tested on the physical robot. It has only been validated in development environments.
+
+#### 3.2.3 Face Matching Configuration
+The face_match node allows you to dynamically change the target face ID for detection. Please note that you can only switch between face IDs that are already pre-registered or available within the system's database.
+
+To change the detection ID, call the /change_face_id service:
+Change Detection ID:
+```bash
+ros2 service call /change_face_id robot_interfaces/srv/ChangeIDmatch "id_match: 002"
+```
 
 
 # Demo

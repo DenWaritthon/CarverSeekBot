@@ -6,7 +6,7 @@ from rclpy.node import Node
 
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import PoseStamped
-from std_srvs.srv import Trigger
+from std_srvs.srv import Trigger,SetBool
 from robot_interfaces.srv import Target2Go
 
 class NavigateClient(Node):
@@ -35,7 +35,7 @@ class NavigateClient(Node):
         )
         
         self.cancel_navigation_srv = self.create_service(
-            Trigger,
+            SetBool,
             'face_matched',
             self.cancel_navigation_callback
         )

@@ -11,7 +11,7 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from std_srvs.srv import SetBool
-from std_msgs.msg import String
+from robot_interfaces.srv import ChangeIDmatch
 
 def cosine_similarity(vec1, vec2):
     return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2) + 1e-6)
@@ -50,7 +50,7 @@ class FaceMatcherNode(Node):
         self.img_pub = self.create_publisher(Image, '/camera/image', 10)
 
         self.change_face_srv = self.create_service(
-            String, 
+            ChangeIDmatch, 
             'change_face_id', 
             self.change_face_id_callback
         )
